@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 705507994}
-  m_IndirectSpecularColor: {r: 0.4513327, g: 0.5009462, b: 0.5729891, a: 1}
+  m_IndirectSpecularColor: {r: 0.44563973, g: 0.4898348, b: 0.5445983, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -205,8 +205,8 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 692625031}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 7, y: 3.1, z: -0.5}
-  m_LocalScale: {x: 6.4318695, y: 6.4318695, z: 6.4318695}
+  m_LocalPosition: {x: 3.13, y: 2.22, z: -10.1}
+  m_LocalScale: {x: 7.0107903, y: 7.0107903, z: 7.0107903}
   m_Children: []
   m_Father: {fileID: 0}
   m_RootOrder: 4
@@ -284,8 +284,7 @@ Light:
   m_BounceIntensity: 1
   m_ColorTemperature: 6570
   m_UseColorTemperature: 0
-  m_BoundingSphereOverride: {x: -6.3384464e+29, y: 1.7592186e+13, z: -1.7014118e+38,
-    w: 2.5243547e-29}
+  m_BoundingSphereOverride: {x: 0, y: -1.4459978e+25, z: 5.91e-43, w: -1.4459978e+25}
   m_UseBoundingSphereOverride: 0
   m_ShadowRadius: 0
   m_ShadowAngle: 0
@@ -296,13 +295,13 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 705507993}
-  m_LocalRotation: {x: -0.7133976, y: -0.59353054, z: -0.012595922, w: -0.3723262}
+  m_LocalRotation: {x: 0.85437465, y: 0.1527133, z: 0.43903768, w: 0.23231107}
   m_LocalPosition: {x: 0, y: 3, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 1, y: 1, z: 1.2349}
   m_Children: []
   m_Father: {fileID: 0}
   m_RootOrder: 1
-  m_LocalEulerAnglesHint: {x: 31.083002, y: 147.516, z: 451.217}
+  m_LocalEulerAnglesHint: {x: 15.240001, y: -598.33, z: -568.808}
 --- !u!1 &963194225
 GameObject:
   m_ObjectHideFlags: 0
@@ -381,13 +380,13 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 963194225}
-  m_LocalRotation: {x: 0.13199534, y: -0.066620946, z: 0.02135812, w: 0.9887784}
+  m_LocalRotation: {x: 0.1316518, y: -0.06662836, z: 0.021334972, w: 0.98882425}
   m_LocalPosition: {x: 5.59, y: 3.05, z: -9.64}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
   m_RootOrder: 0
-  m_LocalEulerAnglesHint: {x: 15.300001, y: -7.5120006, z: 1.4640001}
+  m_LocalEulerAnglesHint: {x: 15.260001, y: -7.5140004, z: 1.4640001}
 --- !u!114 &963194229
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -418,7 +417,7 @@ MonoBehaviour:
   plane: {fileID: 1874431617}
   sphere: {fileID: 692625031}
   light: {fileID: 705507994}
-  numberOfBounces: 8
+  numberOfBounces: 1
   withAntiAliassing: 0
 --- !u!1 &1072144076
 GameObject:

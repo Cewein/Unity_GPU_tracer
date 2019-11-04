@@ -16,6 +16,7 @@ float _GroundPlane;
 float4 _Sphere;
 
 int nbBounces;
+float4 _DirectionalLight;
 float2 _PixelOffset;
 
 struct Ray
@@ -97,11 +98,11 @@ RayHit Trace(Ray ray)
 {
 	RayHit bestHit = createRayHit();
 	intersectGroundPlane(ray, bestHit);
-	for (float x = 0.f; x < 10.f; x++)
+	for (float x = 0.f; x < 5.f; x++)
 	{
-		for (float z = 0.f; z < 10; z++)
+		for (float z = 0.f; z < 5; z++)
 		{
-			IntersectSphere(ray, bestHit, float4(_Sphere.x + x * 10., _Sphere.y, _Sphere.z + z * 10., _Sphere.w + sin(x) * tan(z)));
+			IntersectSphere(ray, bestHit, float4(_Sphere.x + x * 10., _Sphere.y, _Sphere.z + z * 10., _Sphere.w + sin(x + _Sphere.x) * cos(z + _Sphere.z)));
 		}
 	}
 	return bestHit;
@@ -112,11 +113,20 @@ float3 shade(inout Ray ray, RayHit hit)
 	if (hit.distance < 1.#INF)
 	{
 		float3 specular = float3(0.6f, 0.6f, 0.6f);
+		float3 albedo = float3(0.8f, 0.8f, 0.8f);
+
 		ray.origin = hit.position + hit.normal * 0.001f;
 		ray.direction = reflect(ray.direction, hit.normal);
 		ray.energy *= specular;
 
-		 return float3(0.f,0.f,0.f);
+		Ray shadowRay = CreateRay(hit.position + hit.normal * 0.001, -1 * _DirectionalLight.xyz);
+		RayHit shadowHit = Trace(shadowRay);
+		if (shadowHit.distance != 1.#INF)
+		{
+			return float3(0.0f, 0.0f, 0.0f);
+		}
+
+		 return saturate(dot(hit.normal, _DirectionalLight.xyz) * -1) * _DirectionalLight.w * albedo;
 	}
 	else
 	{
