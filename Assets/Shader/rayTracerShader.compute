@@ -112,7 +112,7 @@ float3 shade(inout Ray ray, RayHit hit)
 {
 	if (hit.distance < 1.#INF)
 	{
-		float3 specular = float3(0.6f, 0.6f, 0.6f);
+		float3 specular = float3(0.1f, 0.1f, 0.1f);
 		float3 albedo = float3(0.8f, 0.8f, 0.8f);
 
 		ray.origin = hit.position + hit.normal * 0.001f;
