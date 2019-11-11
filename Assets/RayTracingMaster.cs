@@ -7,16 +7,31 @@ using UnityEditor;
 [ExecuteInEditMode, ImageEffectAllowedInSceneView]
 public class RayTracingMaster : MonoBehaviour
 {
+    //public parameter
     public ComputeShader RayTracingShader;
     public Texture SkyboxTexture;
     public GameObject plane;
-    public GameObject sphere;
-    public Light light;
+    public new Light light;
 
+    //sphere parameter
+    public Vector2 SphereRadius = new Vector2(3.0f, 8.0f);
+    public uint SphereMax = 100;
+    public float SpherePlacementRadius = 100.0f;
+    private ComputeBuffer _SphereBuffer;
+    struct Sphere
+    {
+        public Vector3 position;
+        public float radius;
+        public Vector3 albedo;
+        public Vector3 specular;
+    };
+
+    //rendering parameter
     [Range(0,8)]
     public int numberOfBounces = 1;
     public bool withAntiAliassing = false;
 
+    //texturing and viewport
     private RenderTexture _target;
     private Camera _camera;
 
@@ -76,23 +91,73 @@ public class RayTracingMaster : MonoBehaviour
         else
             RayTracingShader.SetVector("_PixelOffset", new Vector2(0.5f, 0.5f));
 
-        //sphere gameObject
-        Transform sp = sphere.GetComponent<Transform>();
-        sp.localScale = new Vector3(sp.localScale.y, sp.localScale.y, sp.localScale.y);
-        RayTracingShader.SetVector("_Sphere", new Vector4(sp.position.x, sp.position.y, sp.position.z, sp.localScale.x * 0.5f));
-
         //light direction
         Vector3 l = light.transform.forward;
         RayTracingShader.SetVector("_DirectionalLight", new Vector4(l.x, l.y, l.z, light.intensity));
+
+        //array of Spheres
+        RayTracingShader.SetBuffer(0, "_Spheres", _SphereBuffer);
 
         //camera matrix
         RayTracingShader.SetMatrix("_CameraToWorld", _camera.cameraToWorldMatrix);
         RayTracingShader.SetMatrix("_CameraInverseProjection", _camera.projectionMatrix.inverse);
     }
 
+    private void SetUpScene()
+    {
+        List<Sphere> spheres = new List<Sphere>();
+
+        //Add number of sphere equals to the public
+        //SphereMax value
+        for(int i = 0; i < SphereMax; i++)
+        {
+            Sphere sphere = new Sphere();
+            sphere.radius = SphereRadius.x + Random.value * (SphereRadius.y - SphereRadius.x);
+            Vector2 randomPos = Random.insideUnitCircle * SpherePlacementRadius;
+            sphere.position = new Vector3(randomPos.x, sphere.radius, randomPos.y);
+
+            foreach(Sphere other in spheres)
+            {
+                float minDist = sphere.radius + other.radius;
+                if (Vector3.SqrMagnitude(sphere.position - other.position) < minDist * minDist)
+                    goto SkipSphere;
+            }
+
+            Color color = Random.ColorHSV();
+            bool metal = Random.value < 0.5f;
+
+            sphere.albedo = metal ? Vector3.zero: new Vector3(color.r, color.g, color.b);
+            sphere.specular = metal ? new Vector3(color.r, color.g, color.b) : Vector3.one * 0.03f;
+
+            spheres.Add(sphere);
+
+            SkipSphere:
+            continue;
+        }
+
+        //explaing this black magic
+        // the stride is 40 because the struc Sphere
+        // take 40 bytes in the memory (vec3 are 3 float)
+        // so we adresse 40 bytes * spheres.Count
+        _SphereBuffer = new ComputeBuffer(spheres.Count, 40);
+        _SphereBuffer.SetData(spheres);
+    }
+
     private void Awake()
     {
         _camera = GetComponent<Camera>();
+    }
+
+    private void OnEnable()
+    {
+        _currentSample = 0;
+        SetUpScene();
+    }
+
+    private void OnDisable()
+    {
+        if (_SphereBuffer != null)
+            _SphereBuffer.Release();
     }
 
     private void Update()
@@ -105,6 +170,8 @@ public class RayTracingMaster : MonoBehaviour
             light.transform.hasChanged = false;
         }
     }
+
+
 
 
 }
