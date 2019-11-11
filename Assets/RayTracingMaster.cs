@@ -3,13 +3,29 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEditor;
 
-
 [ExecuteInEditMode, ImageEffectAllowedInSceneView]
 public class RayTracingMaster : MonoBehaviour
 {
     //public parameter
     public ComputeShader RayTracingShader;
     public Texture SkyboxTexture;
+
+    private static bool _meshObjectNeedRebuild = false;
+    private static List<RayTracingObject> _rayTracingObjects = new List<RayTracingObject>();
+ 
+    //static function
+    public static void RegisterObject(RayTracingObject rayTracingObject)
+    {
+        _rayTracingObjects.Add(rayTracingObject);
+        _meshObjectNeedRebuild = true;
+    }
+
+    public static void UnregisterObject(RayTracingObject rayTracingObject)
+    {
+        _rayTracingObjects.Remove(rayTracingObject);
+        _meshObjectNeedRebuild = true;
+    }
+
     public GameObject plane;
     public new Light light;
 

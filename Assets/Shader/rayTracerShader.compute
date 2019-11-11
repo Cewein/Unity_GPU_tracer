@@ -28,6 +28,13 @@ int nbBounces;
 float4 _DirectionalLight;
 float2 _PixelOffset;
 
+////////////////////////////////////////////////////////
+//
+//
+//				Ray creation function
+//
+//
+
 struct Ray
 {
 	float3 origin;
@@ -78,6 +85,13 @@ RayHit createRayHit()
 	return hit;
 }
 
+////////////////////////////////////////////////////////
+//
+//
+//				Intersectiong function
+//
+//
+
 void intersectGroundPlane(Ray ray, inout RayHit bestHit)
 {
 	float t = -(ray.origin.y - _GroundPlane)/ray.direction.y;
@@ -112,6 +126,43 @@ void IntersectSphere(Ray ray, inout RayHit bestHit, uint i)
 	}
 }
 
+static const float EPSILON = 1e-8;
+
+bool intersectTriangle_MT97(Ray ray, float3 vert0, float3 vert1, float3 vert2, inout float t, inout float u, inout float v)
+{
+	float3 edge1 = vert1 - vert0;
+	float3 edge2 = vert2 - vert0;
+
+	float3 pvec = cross(ray.direction, edge2);
+
+	float det = dot(edge1, pvec);
+
+	if (det < EPSILON)
+		return false;
+	float inv_det = 1.0f / det;
+
+	float3 tvec = ray.origin - vert0;
+
+	u = dot(tvec, pvec) * inv_det;
+	if (u <0.0 || u > 1.0f)
+		return false;
+	float3 qvec = cross(tvec, edge1);
+
+	v = dot(ray.direction, qvec) * inv_det;
+	if (v < 0.0 || u + v > 1.0f)
+		return false;
+
+	t = dot(edge2, qvec) * inv_det;
+
+	return true;
+}
+
+////////////////////////////////////////////////////////
+//
+//
+//				raytracing function
+//
+//
 
 RayHit Trace(Ray ray)
 {
@@ -123,6 +174,21 @@ RayHit Trace(Ray ray)
 	for (uint i = 0; i < numSpheres; i++)
 		IntersectSphere(ray, bestHit, i);
 
+	float3 v0 = float3(-150, 0, -150);
+	float3 v1 = float3(150, 0, -150);
+	float3 v2 = float3(0, 150 * sqrt(2), -150);
+	float t, u, v;
+	if (intersectTriangle_MT97(ray, v0, v1, v2, t, u, v))
+	{
+		if (t > 0 && t < bestHit.distance)
+		{
+			bestHit.distance = t;
+			bestHit.position = ray.origin + t * ray.direction;
+			bestHit.normal = normalize(cross(v1 - v0, v2 - v0));
+			bestHit.albedo = 0.00f;
+			bestHit.specular = 0.65f * float3(1, 0.4f, 0.2f);
+		}
+	}
 
 
 	return bestHit;

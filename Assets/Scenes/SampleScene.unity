@@ -328,7 +328,7 @@ MonoBehaviour:
   SphereRadius: {x: 0.5, y: 7.89}
   SphereMax: 500
   SpherePlacementRadius: 23.97
-  numberOfBounces: 5
+  numberOfBounces: 8
   withAntiAliassing: 0
 --- !u!1 &1072144076
 GameObject:
